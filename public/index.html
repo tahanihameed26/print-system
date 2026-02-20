@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طلب طباعة</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+html
+{
+    font-family: "Tajawal", "Cairo", sans-serif;
+
+}
+body{
+  margin:0;
+  font-family:"Tajawal",sans-serif;
+  background: radial-gradient(circle at top right,#0f2c3f,#0b1d2a 60%);
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+
+/* خلفية ضبابية */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow-y: auto;
+}
+
+/* الكارد */
+.modal{
+  background:linear-gradient(145deg,#ffffff,#f1f5f9);
+  width:480px;
+  max-width:95%;
+  border-radius:32px;
+  padding:30px 28px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.5);
+  position:relative;
+  animation:fadeIn .4s ease;
+  max-height:90vh;
+  overflow-y:auto;
+}
+
+
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(20px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+/* زر الإغلاق */
+.close{
+  position:absolute;
+  left:16px;
+  top:12px;
+  font-size:22px;
+  cursor:pointer;
+  color:#888;
+  transition:.2s;
+}
+.close:hover{color:#000}
+
+/* العنوان */
+h2{
+   font-family:"Tajawal",sans-serif;
+  text-align:center;
+  margin-bottom:18px;
+  color:#0b1d2a;
+  font-weight:700;
+}
+
+/* الحقول */
+.field{ margin-bottom:14px; }
+
+input, select{
+ font-family:"Tajawal",sans-serif;
+  width:100%;
+  padding:15px;
+  border-radius:16px;
+  border:1px solid #e2e8f0;
+  font-size:14px;
+  background:#f8fafc;
+  transition:.25s ease;
+}
+
+input:hover, select:hover{
+  background:#fff;
+}
+
+input:focus, select:focus{
+  border-color:#d97706;
+  box-shadow:0 0 0 4px rgba(217,119,6,.15);
+  background:#fff;
+}
+
+/* رفع الملف */
+input[type="file"]{
+  background:#f3f6f9;
+  padding:10px;
+}
+
+/* زر الإرسال */
+button{
+   font-family:"Tajawal",sans-serif;
+  width:100%;
+  padding:18px;
+  border:none;
+  border-radius:20px;
+  background:linear-gradient(135deg,#d97706,#b45309);
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  margin-top:16px;
+  cursor:pointer;
+  transition:.3s ease;
+}
+
+button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 15px 35px rgba(217,119,6,.4);
+}
+
+
+/* رسائل */
+.error{
+  color:#e11d48;
+  font-size:13px;
+  display:none;
+  margin-top:4px;
+}
+.success-message{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  visibility:hidden;
+  transition:.3s ease;
+  z-index:9999;
+}
+
+.success-message.show{
+  opacity:1;
+  visibility:visible;
+}
+
+.success-card{
+  background:#fff;
+  padding:40px 30px;
+  border-radius:24px;
+  text-align:center;
+  width:320px;
+  animation:pop .4s ease;
+}
+
+.success-check{
+  width:70px;
+  height:70px;
+  background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;
+  font-size:32px;
+  font-weight:bold;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 20px;
+}
+
+@keyframes pop{
+  from{transform:scale(.8);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+#priceBox{
+  transition:all .3s ease;
+  animation:fadeIn .3s ease;
+}
+ .progress-container{
+  width:100%;
+  height:6px;
+  background:#e2e8f0;
+  border-radius:10px;
+  margin-bottom:12px;
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  width:25%;
+  background:linear-gradient(90deg,#d97706,#f59e0b);
+  transition:width .4s ease;
+}
+
+.steps{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  margin-bottom:20px;
+}
+
+.step{
+  opacity:.4;
+  font-weight:600;
+}
+
+.step.active{
+  opacity:1;
+  color:#d97706;
+}
+.form-step{
+  display:none;
+  animation:fadeSlide .4s ease;
+}
+
+.form-step.active{
+  display:block;
+}
+
+@keyframes fadeSlide{
+  from{opacity:0; transform:translateX(20px);}
+  to{opacity:1; transform:translateX(0);}
+}
+
+.summary-box{
+  background:#f1f5f9;
+  padding:14px;
+  border-radius:16px;
+  line-height:1.7;
+  font-size:14px;
+}
+.step-buttons{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:15px;
+}
+
+.step-buttons button{
+  flex:1;
+  padding:10px 14px;
+  font-size:14px;
+  border-radius:12px;
+}
+
+.submitBtn{
+  background:linear-gradient(135deg,#d97706,#b45309);
+  color:#fff;
+  font-weight:bold;
+}
+.submitBtn{
+  position:relative;
+  background:linear-gradient(135deg,#d97706,#b45309);
+  color:#fff;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+.submitBtn:disabled{
+  opacity:0.7;
+  cursor:not-allowed;
+}
+
+.btn-loader{
+  width:18px;
+  height:18px;
+  border:3px solid rgba(255,255,255,0.4);
+  border-top:3px solid #fff;
+  border-radius:50%;
+  animation:spin 1ms linear infinite;
+  margin:auto;
+}
+
+@keyframes spin{
+  to{ transform:rotate(360deg); }
+}
+.summary-card{
+  background:#f8fafc;
+  padding:20px;
+  border-radius:16px;
+  border:1px solid #e2e8f0;
+}
+
+.summary-card table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+
+.summary-card td{
+  padding:8px 6px;
+  border-bottom:1px solid #eee;
+}
+
+.summary-card td:first-child{
+  font-weight:600;
+  color:#334155;
+  width:45%;
+}
+
+.total-row td{
+  font-weight:bold;
+  color:#d97706;
+  border-bottom:none;
+  padding-top:14px;
+}
+.payment-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(6px);
+
+  display:none;
+  align-items:center;
+  justify-content:center;
+
+  z-index:9999;
+
+  /* 👇 يسمح بالتمرير */
+  overflow-y:auto;
+  padding:40px 15px;
+}
+
+.payment-modal.show{
+  display:flex;
+}
+
+/* الكارد */
+.payment-card{
+  background:#ffffff;
+  width:420px;
+  max-width:95%;
+
+  padding:35px 30px;
+  border-radius:24px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+
+  animation:fadeIn .3s ease;
+  text-align:center;
+
+  /* 👇 مهم جدًا */
+  max-height:90vh;
+  overflow-y:auto;
+}
+
+/* Scroll جميل */
+.payment-card::-webkit-scrollbar{
+  width:6px;
+}
+
+.payment-card::-webkit-scrollbar-thumb{
+  background:#d97706;
+  border-radius:10px;
+}
+
+
+/* ===== Header ===== */
+.payment-header{
+  margin-bottom:25px;
+}
+
+.success-icon{
+  width:70px;
+  height:70px;
+  background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;
+  font-size:32px;
+  font-weight:bold;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 15px;
+}
+
+.payment-header h2{
+  margin:0;
+  font-size:20px;
+  color:#0b1d2a;
+}
+
+.stage-text{
+  font-size:14px;
+  color:#64748b;
+  margin-top:6px;
+}
+.pending-state{
+  text-align:center;
+}
+
+.pending-icon{
+  font-size:48px;
+  margin-bottom:15px;
+}
+
+.pending-note{
+  background:#f1f5f9;
+  padding:12px;
+  border-radius:12px;
+  margin:15px 0;
+  font-size:14px;
+  color:#334155;
+}
+
+.pending-state button{
+  padding:12px 20px;
+  background:#0b1d2a;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+/* ===== Order Summary ===== */
+.order-summary-box{
+  background:#f8fafc;
+  padding:15px;
+  border-radius:14px;
+  margin-bottom:20px;
+}
+
+.summary-row{
+  display:flex;
+  justify-content:space-between;
+  margin:6px 0;
+  font-size:14px;
+}
+
+/* ===== Wallet ===== */
+.wallet-box{
+  background:linear-gradient(135deg,#fff7ed,#ffedd5);
+  padding:18px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+
+.wallet-title{
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.wallet-number{
+  font-size:22px;
+  font-weight:bold;
+  letter-spacing:1px;
+  color:#d97706;
+  margin-bottom:6px;
+}
+
+/* ===== Inputs ===== */
+.payment-fields input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #e2e8f0;
+  margin-bottom:12px;
+  font-family:inherit;
+}
+
+.payment-fields input:focus{
+  outline:none;
+  border-color:#d97706;
+  box-shadow:0 0 0 3px rgba(217,119,6,.15);
+}
+
+/* ===== Button ===== */
+.confirm-btn{
+  width:100%;
+  padding:14px;
+  background:linear-gradient(135deg,#10b981,#059669);
+  border:none;
+  border-radius:14px;
+  color:#fff;
+  font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.confirm-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(16,185,129,.4);
+}
+
+/* Animation */
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(.95);}
+  to{opacity:1; transform:scale(1);}
+}
+
+
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+  <div class="modal">
+    <div class="close" onclick="location.reload()">×</div>
+
+    <h2>تفاصيل طلب الطباعة</h2>
+
+<form id="orderForm">
+
+<!-- ===== Progress ===== -->
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div class="steps">
+  <span class="step active">👤 البيانات</span>
+  <span class="step">🖨 التفاصيل</span>
+  <span class="step">📎 الملف</span>
+  <span class="step">✅ تأكيد</span>
+</div>
+
+<!-- ================= STEP 1 ================= -->
+<div class="form-step active">
+
+  <div class="field">
+    <input type="text" name="name" placeholder="اسم العميل" required>
+  </div>
+
+  <div class="field">
+    <input type="tel" id="phone" name="phone" placeholder="رقم الهاتف" required>
+    <div class="error" id="phoneError">رقم الهاتف غير صحيح</div>
+  </div>
+
+  <button type="button" class="nextBtn">التالي</button>
+</div>
+
+<!-- ================= STEP 2 ================= -->
+<div class="form-step">
+
+  <div class="field">
+    <label>نوع الطباعة</label>
+    <select id="productSelect">
+      <option value="">اختر نوع الطباعة</option>
+      <option value="كروت">طباعة كروت</option>
+      <option value="كروت لاصق">كروت لاصق</option>
+      <option value="برشور">برشور</option>
+    </select>
+  </div>
+
+  <!-- ===== كروت ===== -->
+  <div id="cardsSection" style="display:none;">
+    <div class="field">
+      <label>المقاس</label>
+      <select id="cardsSize">
+        <option value="9×5 سم">9×5 سم</option>
+        <option value="8×5 سم">8×5 سم</option>
+        <option value="custom">مخصص</option>
+      </select>
+    </div>
+
+    <div class="field" id="cardsCustomSize" style="display:none;">
+      <input type="text" id="cardsCustomInput" placeholder="اكتب المقاس المخصص">
+    </div>
+
+    <div class="field">
+      <input type="number" id="cardsQty" placeholder="الكمية">
+    </div>
+
+    <div class="field">
+      <label>السلفان</label>
+      <select id="cardsLamination">
+        <option value="بدون سلفان">بدون سلفان</option>
+        <option value="مسلفن وجه واحد">مسلفن وجه واحد</option>
+        <option value="مسلفن وجهين">مسلفن وجهين</option>
+      </select>
+    </div>
+
+    <div class="field" id="cardsFinishField" style="display:none;">
+      <label>نوع السلفان</label>
+      <select id="cardsFinish">
+        <option value="لمع">لمع</option>
+        <option value="مطفي">مطفي</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ===== كروت لاصق ===== -->
+  <div id="stickerSection" style="display:none;">
+    <div class="field">
+      <label>المقاس</label>
+      <select id="stickerSize">
+        <option value="A5">A5</option>
+        <option value="A6">A6</option>
+        <option value="custom">مخصص</option>
+      </select>
+    </div>
+
+    <div class="field" id="stickerCustomSize" style="display:none;">
+      <input type="text" id="stickerCustomInput" placeholder="اكتب المقاس المخصص">
+    </div>
+
+    <div class="field">
+      <input type="number" id="stickerQty" placeholder="الكمية">
+    </div>
+
+    <div class="field">
+      <label>السلفان</label>
+      <select id="stickerLamination">
+        <option value="بدون سلفان">بدون سلفان</option>
+        <option value="مسلفن">مسلفن</option>
+      </select>
+    </div>
+
+    <div class="field" id="stickerFinishField" style="display:none;">
+      <label>نوع السلفان</label>
+      <select id="stickerFinish">
+        <option value="لمع">لمع</option>
+        <option value="مطفي">مطفي</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ===== برشور ===== -->
+  <div id="brochureSection" style="display:none;">
+    <div class="field">
+      <label>المقاس</label>
+      <select id="brochureSize">
+        <option value="A4">A4</option>
+        <option value="A5">A5</option>
+        <option value="custom">مخصص</option>
+      </select>
+    </div>
+
+    <div class="field" id="brochureCustomSizeField" style="display:none;">
+      <input type="text" id="brochureCustomSize" placeholder="اكتب المقاس المخصص">
+    </div>
+
+    <div class="field">
+      <input type="number" id="brochureQty" placeholder="الكمية">
+    </div>
+
+    <div class="field">
+      <label>الجرام</label>
+      <select id="brochureWeight">
+        <option value="150g">150 جرام</option>
+        <option value="200g">200 جرام</option>
+        <option value="250g">250 جرام</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>عدد الأوجه</label>
+      <select id="brochureFaces">
+        <option value="وجه واحد">وجه واحد</option>
+        <option value="وجهين">وجهين</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>السلفان</label>
+      <select id="brochureLamination">
+        <option value="بدون سلفان">بدون سلفان</option>
+        <option value="مسلفن">مسلفن</option>
+      </select>
+    </div>
+
+    <div class="field" id="brochureFinishField" style="display:none;">
+      <label>نوع السلفان</label>
+      <select id="brochureFinish">
+        <option value="لمع">لمع</option>
+        <option value="مطفي">مطفي</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- السعر -->
+  <div class="field" style="text-align:center;">
+    <div id="priceBox" style="
+      background:#f1f5f9;
+      padding:14px;
+      border-radius:14px;
+      font-weight:bold;
+      font-size:16px;
+      display:none;">
+      السعر التقريبي: <span id="priceValue">0</span> ريال
+    </div>
+  </div>
+<div class="step-buttons">
+  <button type="button" class="prevBtn">رجوع</button>
+  <button type="button" class="nextBtn">التالي</button>
+</div>
+
+</div>
+
+<!-- ================= STEP 3 ================= -->
+<div class="form-step">
+  <div class="field">
+    <input type="file" name="design" required>
+  </div>
+<div class="step-buttons">
+  <button type="button" class="prevBtn">رجوع</button>
+  <button type="button" class="nextBtn">التالي</button>
+</div>
+</div>
+
+<!-- ================= STEP 4 ================= -->
+<div class="form-step">
+  <div id="orderSummary" class="summary-box"></div>
+<div class="step-buttons">
+  <button type="button" class="prevBtn">رجوع</button>
+  <button type="submit" class="submitBtn" id="submitBtn">
+  <span class="btn-text">إرسال الطلب</span>
+  <span class="btn-loader" style="display:none;"></span>
+</button>
+</div>
+</div>
+</form>
+<div id="successMessage" class="success-message">
+  <div class="success-card">
+    <div class="success-check">✓</div>
+    <h3>تم إرسال الطلب بنجاح</h3>
+
+  </div>
+</div>
+
+  </div>
+</div>
+<div id="paymentModal" class="payment-modal">
+
+  <div class="payment-card">
+
+    <!-- رأس المودال -->
+    <div class="payment-header">
+      <div class="success-icon">✓</div>
+      <h2>تم إنشاء الطلب بنجاح</h2>
+      <p class="stage-text">الآن أنت في مرحلة الدفع لإكمال الطلب</p>
+    </div>
+
+    <!-- معلومات الطلب -->
+    <div class="order-summary-box">
+      <div class="summary-row">
+        <span>رقم الطلب</span>
+        <strong id="paymentOrderId"></strong>
+      </div>
+      <div class="summary-row">
+        <span>المبلغ المطلوب</span>
+        <strong><span id="paymentAmount"></span> ريال</strong>
+      </div>
+    </div>
+
+    <!-- بيانات المحفظة -->
+    <div class="wallet-box">
+      <p class="wallet-title">الدفع عبر محفظة جيب لهذا الرقم</p>
+      <div class="wallet-number">
+        773713234
+      </div>
+      <small>يرجى تحويل المبلغ ثم تأكيد العملية أدناه</small>
+    </div>
+
+    <!-- إدخال بيانات الدفع -->
+    <div class="payment-fields">
+      <input type="text" id="transactionId" placeholder="رقم العملية (اختياري)">
+      <input type="file" id="paymentProof" accept="image/*" required>
+    </div>
+
+    <button id="confirmPaymentBtn" class="confirm-btn">
+      تأكيد الدفع
+    </button>
+
+  </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  /* ================= العناصر الأساسية ================= */
+
+  const form = document.getElementById("orderForm");
+  const phoneInput = document.getElementById("phone");
+  const phoneError = document.getElementById("phoneError");
+
+  const productSelect = document.getElementById("productSelect");
+  const cardsSection = document.getElementById("cardsSection");
+  const stickerSection = document.getElementById("stickerSection");
+  const brochureSection = document.getElementById("brochureSection");
+
+  const priceBox = document.getElementById("priceBox");
+  const priceValue = document.getElementById("priceValue");
+
+  const steps = document.querySelectorAll(".form-step");
+  const nextBtns = document.querySelectorAll(".nextBtn");
+  const prevBtns = document.querySelectorAll(".prevBtn");
+  const progressBar = document.getElementById("progressBar");
+  const summaryBox = document.getElementById("orderSummary");
+/* ===== مقاس مخصص للكروت ===== */
+const cardsSize = document.getElementById("cardsSize");
+const cardsCustomSize = document.getElementById("cardsCustomSize");
+
+if (cardsSize) {
+  cardsSize.addEventListener("change", function () {
+    cardsCustomSize.style.display =
+      this.value === "custom" ? "block" : "none";
+  });
+}
+
+/* ===== مقاس مخصص للكروت اللاصق ===== */
+const stickerSize = document.getElementById("stickerSize");
+const stickerCustomSize = document.getElementById("stickerCustomSize");
+
+if (stickerSize) {
+  stickerSize.addEventListener("change", function () {
+    stickerCustomSize.style.display =
+      this.value === "custom" ? "block" : "none";
+  });
+}
+
+/* ===== مقاس مخصص للبرشور ===== */
+const brochureSize = document.getElementById("brochureSize");
+const brochureCustomSizeField = document.getElementById("brochureCustomSizeField");
+
+if (brochureSize) {
+  brochureSize.addEventListener("change", function () {
+    brochureCustomSizeField.style.display =
+      this.value === "custom" ? "block" : "none";
+  });
+}
+
+  let currentStep = 0;
+
+  /* ================= التنقل بين الخطوات ================= */
+
+  function showStep(index){
+    steps.forEach((step,i)=>{
+      step.classList.toggle("active", i === index);
+    });
+
+    if(progressBar){
+      progressBar.style.width = ((index+1)/steps.length)*100 + "%";
+    }
+
+    if(index === 3){
+      generateSummary();
+    }
+  }
+
+nextBtns.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+
+    /* ===== STEP 1 تحقق ===== */
+    if(currentStep === 0){
+
+      if(!form.name.value.trim()){
+        alert("يرجى إدخال الاسم");
+        return;
+      }
+
+      if(!validPhone(phoneInput.value)){
+        phoneError.style.display = "block";
+        return;
+      }
+
+      phoneError.style.display = "none";
+    }
+
+    /* ===== STEP 2 تحقق ===== */
+    if(currentStep === 1){
+
+      if(!productSelect.value){
+        alert("اختر نوع الطباعة");
+        return;
+      }
+
+      if(priceValue.textContent == "0" || priceValue.textContent == ""){
+        alert("أدخل الكمية لحساب السعر");
+        return;
+      }
+    }
+
+    /* ===== STEP 3 تحقق ===== */
+    if(currentStep === 2){
+      const fileInput = form.querySelector("input[type='file']");
+      if(!fileInput.files.length){
+        alert("يرجى رفع ملف التصميم");
+        return;
+      }
+    }
+
+    currentStep++;
+    showStep(currentStep);
+  });
+});
+
+  prevBtns.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      if(currentStep > 0){
+        currentStep--;
+        showStep(currentStep);
+      }
+    });
+  });
+
+  /* ================= إظهار الأقسام حسب المنتج ================= */
+
+  productSelect?.addEventListener("change", function(){
+
+    cardsSection.style.display = "none";
+    stickerSection.style.display = "none";
+    brochureSection.style.display = "none";
+
+    if(this.value === "كروت"){
+      cardsSection.style.display = "block";
+    }
+    if(this.value === "كروت لاصق"){
+      stickerSection.style.display = "block";
+    }
+    if(this.value === "برشور"){
+      brochureSection.style.display = "block";
+    }
+
+    calculatePrice();
+  });
+
+  /* ================= حساب السعر ================= */
+
+  function calculatePrice(){
+
+    let price = 0;
+    const product = productSelect.value;
+
+    if(product === "كروت"){
+      const qty = parseInt(document.getElementById("cardsQty")?.value || 0);
+      if(qty >= 1000) price = qty * 0.02;
+      else if(qty >= 500) price = qty * 0.025;
+      else price = qty * 0.03;
+
+      const lam = document.getElementById("cardsLamination")?.value || "";
+      if(lam.includes("مسلفن")){
+        price += qty * 0.005;
+      }
+    }
+
+    if(product === "كروت لاصق"){
+      const qty = parseInt(document.getElementById("stickerQty")?.value || 0);
+      price = qty * 0.035;
+
+      const lam = document.getElementById("stickerLamination")?.value || "";
+      if(lam === "مسلفن"){
+        price += qty * 0.005;
+      }
+    }
+
+    if(product === "برشور"){
+      const qty = parseInt(document.getElementById("brochureQty")?.value || 0);
+      const weight = document.getElementById("brochureWeight")?.value || "";
+
+      if(weight === "150g") price = qty * 0.05;
+      if(weight === "200g") price = qty * 0.06;
+      if(weight === "250g") price = qty * 0.07;
+
+      const lam = document.getElementById("brochureLamination")?.value || "";
+      if(lam === "مسلفن"){
+        price += qty * 0.01;
+      }
+    }
+
+    if(price > 0){
+      priceBox.style.display = "block";
+      priceValue.textContent = price.toFixed(2);
+    } else {
+      priceBox.style.display = "none";
+    }
+  }
+
+  /* ================= تفعيل حساب السعر عند التغيير ================= */
+
+  document.addEventListener("input", function(e){
+    if(e.target.matches("input, select")){
+      calculatePrice();
+    }
+  });
+
+  /* ================= إظهار نوع السلفان ================= */
+
+  function laminationLogic(selectId, finishFieldId){
+    const select = document.getElementById(selectId);
+    const finishField = document.getElementById(finishFieldId);
+
+    if(select && finishField){
+      select.addEventListener("change", function(){
+        finishField.style.display =
+          this.value.includes("مسلفن") ? "block" : "none";
+      });
+    }
+  }
+
+  laminationLogic("cardsLamination", "cardsFinishField");
+  laminationLogic("stickerLamination", "stickerFinishField");
+  laminationLogic("brochureLamination", "brochureFinishField");
+
+  /* ================= تحقق رقم الهاتف ================= */
+
+  function validPhone(phone){
+    return /^(77|78|70|71|73)\d{7}$/.test(phone);
+  }
+
+  /* ================= ملخص الطلب ================= */
+function generateSummary(){
+
+  const name = form.name.value;
+  const phone = phoneInput.value;
+  const product = productSelect.value;
+  const price = priceValue.textContent;
+
+  let detailsHTML = "";
+
+  if(product === "كروت"){
+    detailsHTML += `
+      <tr><td>المقاس</td><td>${document.getElementById("cardsSize").value}</td></tr>
+      <tr><td>الكمية</td><td>${document.getElementById("cardsQty").value}</td></tr>
+      <tr><td>السلفان</td><td>${document.getElementById("cardsLamination").value}</td></tr>
+    `;
+
+   const lamination = document.getElementById("cardsLamination").value;
+
+if(lamination.includes("مسلفن")){
+  const finish = document.getElementById("cardsFinish")?.value;
+  detailsHTML += `<tr><td>نوع السلفان</td><td>${finish}</td></tr>`;
+}
+
+  }
+
+  if(product === "كروت لاصق"){
+    detailsHTML += `
+      <tr><td>المقاس</td><td>${document.getElementById("stickerSize").value}</td></tr>
+      <tr><td>الكمية</td><td>${document.getElementById("stickerQty").value}</td></tr>
+      <tr><td>السلفان</td><td>${document.getElementById("stickerLamination").value}</td></tr>
+    `;
+const lamination = document.getElementById("stickerLamination").value;
+
+if(lamination === "مسلفن"){
+  const finish = document.getElementById("stickerFinish")?.value;
+  detailsHTML += `<tr><td>نوع السلفان</td><td>${finish}</td></tr>`;
+}
+
+  }
+
+  if(product === "برشور"){
+    detailsHTML += `
+      <tr><td>المقاس</td><td>${document.getElementById("brochureSize").value}</td></tr>
+      <tr><td>الكمية</td><td>${document.getElementById("brochureQty").value}</td></tr>
+      <tr><td>الجرام</td><td>${document.getElementById("brochureWeight").value}</td></tr>
+      <tr><td>عدد الأوجه</td><td>${document.getElementById("brochureFaces").value}</td></tr>
+      <tr><td>السلفان</td><td>${document.getElementById("brochureLamination").value}</td></tr>
+    `;
+
+  const lamination = document.getElementById("brochureLamination").value;
+
+if(lamination === "مسلفن"){
+  const finish = document.getElementById("brochureFinish")?.value;
+  detailsHTML += `<tr><td>نوع السلفان</td><td>${finish}</td></tr>`;
+}
+
+}
+
+  summaryBox.innerHTML = `
+    <div class="summary-card">
+      <table>
+        <tr><td>الاسم</td><td>${name}</td></tr>
+        <tr><td>الهاتف</td><td>${phone}</td></tr>
+        <tr><td>نوع الطباعة</td><td>${product}</td></tr>
+        ${detailsHTML}
+        <tr class="total-row"><td>السعر التقريبي</td><td>${price} ريال</td></tr>
+      </table>
+    </div>
+  `;
+}
+
+
+  /* ================= الإرسال ================= */
+
+ let isSubmitting = false;
+
+form.addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  if(isSubmitting) return; // يمنع الإرسال المتكرر
+
+  if(!validPhone(phoneInput.value)){
+    phoneError.style.display = "block";
+    return;
+  }
+
+  phoneError.style.display = "none";
+
+  const submitBtn = document.getElementById("submitBtn");
+  const btnText = submitBtn.querySelector(".btn-text");
+  const btnLoader = submitBtn.querySelector(".btn-loader");
+
+  // 🔒 قفل الزر
+  isSubmitting = true;
+  submitBtn.disabled = true;
+  btnText.style.display = "none";
+  btnLoader.style.display = "inline-block";
+
+
+  let formData = {
+    name: form.name.value,
+    phone: phoneInput.value,
+    product: productSelect.value,
+    size: null,
+    quantity: null,
+    lamination: null,
+    finish: null,
+    weight: null,
+    faces: null,
+    price: parseFloat(priceValue.textContent) || 0
+  };
+
+  /* ===== كروت ===== */
+  if(productSelect.value === "كروت"){
+    const sizeValue = cardsSize.value === "custom"
+      ? document.getElementById("cardsCustomInput").value
+      : cardsSize.value;
+
+    formData.size = sizeValue;
+    formData.quantity = parseInt(document.getElementById("cardsQty")?.value) || 0;
+    formData.lamination = document.getElementById("cardsLamination")?.value || "";
+    formData.finish = document.getElementById("cardsFinish")?.value || "";
+  }
+
+  /* ===== كروت لاصق ===== */
+  if(productSelect.value === "كروت لاصق"){
+    const stickerSize = document.getElementById("stickerSize");
+    const sizeValue = stickerSize.value === "custom"
+      ? document.getElementById("stickerCustomInput").value
+      : stickerSize.value;
+
+    formData.size = sizeValue;
+    formData.quantity = parseInt(document.getElementById("stickerQty")?.value) || 0;
+    formData.lamination = document.getElementById("stickerLamination")?.value || "";
+    formData.finish = document.getElementById("stickerFinish")?.value || "";
+  }
+
+  /* ===== برشور ===== */
+  if(productSelect.value === "برشور"){
+    const brochureSize = document.getElementById("brochureSize");
+    const sizeValue = brochureSize.value === "custom"
+      ? document.getElementById("brochureCustomSize").value
+      : brochureSize.value;
+
+    formData.size = sizeValue;
+    formData.quantity = parseInt(document.getElementById("brochureQty")?.value) || 0;
+    formData.weight = document.getElementById("brochureWeight")?.value || "";
+    formData.faces = document.getElementById("brochureFaces")?.value || "";
+    formData.lamination = document.getElementById("brochureLamination")?.value || "";
+    formData.finish = document.getElementById("brochureFinish")?.value || "";
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/orders", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(formData)
+    });
+
+    if(!response.ok){
+      throw new Error("فشل الإرسال");
+    }
+const result = await response.json();
+// const successBox = document.getElementById("successMessage");
+
+// successBox.classList.add("show");
+document.getElementById("paymentOrderId").textContent = result.orderId;
+document.getElementById("paymentAmount").textContent = formData.price;
+
+document.getElementById("paymentModal").classList.add("show");
+
+// إعادة تعيين النموذج بعد 3 ثواني
+setTimeout(() => {
+  successBox.classList.remove("show");
+  form.reset();
+  priceBox.style.display = "none";
+  currentStep = 0;
+  showStep(0);
+}, 3000);
+
+  } catch(err){
+    alert("حدث خطأ أثناء الإرسال");
+  }
+
+  // 🔓 فتح الزر بعد الانتهاء
+  isSubmitting = false;
+  submitBtn.disabled = false;
+  btnText.style.display = "inline";
+  btnLoader.style.display = "none";
+});
+document.getElementById("confirmPaymentBtn")
+.addEventListener("click", async function(){
+
+  const btn = this;
+  btn.disabled = true;
+  btn.innerText = "جاري الإرسال...";
+
+  const transactionId = document.getElementById("transactionId").value;
+  const orderId = document.getElementById("paymentOrderId").textContent;
+  const amount = document.getElementById("paymentAmount").textContent;
+
+  try {
+
+    const response = await fetch("http://localhost:5000/api/payments", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        orderId,
+        transactionId,
+        amount
+      })
+    });
+
+    if(!response.ok){
+      throw new Error();
+    }
+
+    showPaymentPendingState(); // 👈 هنا التحويل للحالة الجديدة
+
+  } catch(err){
+    btn.disabled = false;
+    btn.innerText = "تأكيد الدفع";
+    alert("حدث خطأ أثناء إرسال بيانات الدفع");
+  }
+
+});
+function closePaymentModal(){
+  document.getElementById("paymentModal").classList.remove("show");
+  document.body.style.overflow = "auto";
+}
+
+function showPaymentPendingState(){
+
+  const card = document.querySelector(".payment-card");
+
+  card.innerHTML = `
+    <div class="pending-state">
+
+      <div class="pending-icon">⏳</div>
+
+      <h2>تم استلام بيانات الدفع</h2>
+
+      <p>
+        سيتم مراجعة عملية التحويل والتأكد منها.
+      </p>
+
+      <div class="pending-note">
+        بمجرد التأكد من استلام المبلغ سيتم إشعارك برسالة واتس اب ✔
+      </div>
+
+      <button onclick="closePaymentModal()">حسنًا</button>
+
+    </div>
+  `;
+}
+
+});
+</script>
+
+</body>
+</html>
