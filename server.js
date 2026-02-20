@@ -25,7 +25,7 @@ function validPhone(phone){
 }
 
 /* API حفظ الطلب */
-app.post("/api/orders", async (req, res) => {
+app.post("https://print-system.onrender.com/api/orders", async (req, res) => {
   console.log("API HIT ✅");
 console.log("BODY:", req.body);
 
@@ -97,7 +97,7 @@ res.json({
 });
 
 
-app.post("/api/payments", async (req, res) => {
+app.post("https://print-system.onrender.com/api/payments", async (req, res) => {
   try {
 
     const { orderId, transactionId, amount } = req.body;
