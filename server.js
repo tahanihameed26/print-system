@@ -3,7 +3,11 @@ const sql = require("mssql");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["https://your-netlify-site.netlify.app"],
+  methods: ["GET", "POST"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.static("public"));
 
@@ -25,9 +29,7 @@ function validPhone(phone){
 }
 
 /* API حفظ الطلب */
-app.post("https://print-system.onrender.com/api/orders", async (req, res) => {
-  console.log("API HIT ✅");
-console.log("BODY:", req.body);
+app.post("/api/orders", async (req, res) => {
 
   try {
 
@@ -44,85 +46,62 @@ console.log("BODY:", req.body);
       price
     } = req.body;
 
-    /* ===== التحقق من البيانات ===== */
+    const result = await pool.query(
+      `INSERT INTO orders
+      (name, phone, product, size, quantity, lamination, finish, weight, faces, price)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+      RETURNING id`,
+      [
+        name,
+        phone,
+        product,
+        size,
+        quantity,
+        lamination,
+        finish,
+        weight,
+        faces,
+        price
+      ]
+    );
 
-    if(!name || name.length < 3)
-      return res.status(400).json({error:"الاسم غير صحيح"});
-
-    if(!validPhone(phone))
-      return res.status(400).json({error:"رقم الهاتف غير صحيح"});
-
-    if(!product)
-      return res.status(400).json({error:"اختر نوع الطباعة"});
-
-    if(!quantity || quantity <= 0)
-      return res.status(400).json({error:"الكمية غير صحيحة"});
-
-    if(!price || price <= 0)
-      return res.status(400).json({error:"السعر غير صالح"});
-
-   /* الاتصال بقاعدة البيانات */
-const pool = await sql.connect(config);
-
-const result = await pool.request()
-  .input("name", sql.NVarChar, name)
-  .input("phone", sql.NVarChar, phone)
-  .input("product", sql.NVarChar, product)
-  .input("size", sql.NVarChar, size)
-  .input("quantity", sql.Int, quantity)
-  .input("lamination", sql.NVarChar, lamination || "")
-  .input("finish", sql.NVarChar, finish || "")
-  .input("weight", sql.NVarChar, weight || "")
-  .input("faces", sql.NVarChar, faces || "")
-  .input("price", sql.Decimal(10,2), price)
-  .query(`
-    INSERT INTO orders
-    (name, phone, product, size, quantity, lamination, finish, weight, faces, price)
-    OUTPUT INSERTED.id
-    VALUES
-    (@name, @phone, @product, @size, @quantity, @lamination, @finish, @weight, @faces, @price)
-  `);
-
-/* نرجع رقم الطلب للفرونت */
-res.json({
-  success: true,
-  orderId: result.recordset[0].id
-});
-
+    res.json({
+      success: true,
+      orderId: result.rows[0].id
+    });
 
   } catch(err){
-    console.error("SERVER ERROR:", err);
-    res.status(500).json({error:"خطأ داخلي في السيرفر"});
+    console.error(err);
+    res.status(500).json({error:"server error"});
   }
+
 });
 
+app.post("/api/payments", async (req, res) => {
 
-app.post("https://print-system.onrender.com/api/payments", async (req, res) => {
   try {
 
     const { orderId, transactionId, amount } = req.body;
 
-    if(!orderId || !amount)
-      return res.status(400).json({error:"بيانات ناقصة"});
+    await pool.query(
+      `INSERT INTO payments
+      (order_id, transaction_id, proof_image, amount)
+      VALUES ($1,$2,$3,$4)`,
+      [
+        orderId,
+        transactionId || "",
+        "uploaded_later.jpg",
+        amount
+      ]
+    );
 
-    const pool = await sql.connect(config);
-
-    await pool.request()
-      .input("orderId", sql.Int, orderId)
-      .input("transactionId", sql.NVarChar, transactionId || "")
-      .input("amount", sql.Decimal(10,2), amount)
-      .input("proofImage", sql.NVarChar, "uploaded_later.jpg")
-      .query(`
-        INSERT INTO payments (order_id, transaction_id, proof_image, amount)
-        VALUES (@orderId, @transactionId, @proofImage, @amount)
-      `);
-
-    res.json({success:true});
+    res.json({ success: true });
 
   } catch(err){
     console.error(err);
-    res.status(500).json({error:"خطأ في الدفع"});
+    res.status(500).json({ error:"payment error" });
   }
+
 });
 const PORT = process.env.PORT || 5000;
 
