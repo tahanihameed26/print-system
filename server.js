@@ -4,24 +4,21 @@ const cors = require("cors");
 
 const app = express();
 app.use(cors({
-  origin: ["https://your-netlify-site.netlify.app"],
+  origin: ["https://reliable-piroshki-968b50.netlify.app/"],
   methods: ["GET", "POST"],
   credentials: true
 }));
 app.use(express.json());
 app.use(express.static("public"));
 
-/* إعداد الاتصال */
-const config = {
-  user: "whats",
-  password: "admin1234",   // غيّرها حسب إعدادك
-  server: "DESKTOP-U44G9Q5",
-  database: "print_system",
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
-  },
-};
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 /* دالة تحقق رقم الهاتف اليمني */
 function validPhone(phone){
