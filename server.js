@@ -100,6 +100,41 @@ app.post("/api/payments", async (req, res) => {
   }
 
 });
+app.post("/api/notification-payment", async (req, res) => {
+
+  try {
+
+    const {
+      wallet,
+      title,
+      text,
+      amount,
+      sender,
+      time
+    } = req.body;
+
+    await pool.query(
+      `INSERT INTO wallet_notifications
+      (wallet_app, title, message, amount, sender, created_at)
+      VALUES ($1,$2,$3,$4,$5,$6)`,
+      [
+        wallet,
+        title,
+        text,
+        amount,
+        sender,
+        time
+      ]
+    );
+
+    res.json({ success: true });
+
+  } catch(err){
+    console.error(err);
+    res.status(500).json({ error:"notification error" });
+  }
+
+});
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
