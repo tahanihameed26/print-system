@@ -495,7 +495,96 @@ button:hover{
   transform:translateY(-2px);
   box-shadow:0 8px 20px rgba(16,185,129,.4);
 }
+.wallet-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(90px,1fr));
+gap:12px;
+margin-top:15px;
+}
+.wallet-card{
 
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+
+background:#fff;
+
+border-radius:12px;
+
+padding:10px;
+
+cursor:pointer;
+
+border:1px solid #eee;
+
+transition:all .25s ease;
+
+}
+.wallet-card:hover{
+
+transform:translateY(-3px);
+
+box-shadow:0 4px 10px rgba(0,0,0,.08);
+
+border-color:#ff7a00;
+
+}
+.wallet-card img{
+
+width:40px;
+height:40px;
+
+object-fit:contain;
+
+margin-bottom:6px;
+
+}
+.wallet-card img{
+
+width:40px;
+height:40px;
+
+object-fit:contain;
+
+margin-bottom:6px;
+
+}
+.payment-tabs{
+
+display:flex;
+
+gap:10px;
+
+margin-top:15px;
+
+}
+
+.tab{
+
+flex:1;
+
+padding:8px;
+
+border:none;
+
+background:#eee;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-weight:600;
+
+}
+
+.tab.active{
+
+background:#ff7a00;
+
+color:white;
+
+}
 /* Animation */
 @keyframes fadeIn{
   from{opacity:0; transform:scale(.95);}
