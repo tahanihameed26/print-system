@@ -284,7 +284,13 @@ button:hover{
   animation:spin 1ms linear infinite;
   margin:auto;
 }
+.tab-content{
+display:none;
+}
 
+.tab-content.active{
+display:block;
+}
 @keyframes spin{
   to{ transform:rotate(360deg); }
 }
@@ -620,7 +626,6 @@ color:white;
 
 <!-- ================= STEP 1 ================= -->
 <div class="form-step active">
-
   <div class="field">
     <input type="text" name="name" placeholder="اسم العميل" required>
   </div>
@@ -632,7 +637,6 @@ color:white;
 
   <button type="button" class="nextBtn">التالي</button>
 </div>
-
 <!-- ================= STEP 2 ================= -->
 <div class="form-step">
 
@@ -790,7 +794,6 @@ color:white;
 </div>
 
 </div>
-
 <!-- ================= STEP 3 ================= -->
 <div class="form-step">
   <div class="field">
@@ -801,7 +804,6 @@ color:white;
   <button type="button" class="nextBtn">التالي</button>
 </div>
 </div>
-
 <!-- ================= STEP 4 ================= -->
 <div class="form-step">
   <div id="orderSummary" class="summary-box"></div>
@@ -918,12 +920,21 @@ onclick="selectWallet('التضامن','987654321','')">
 
 <div>
 <span>رقم التحويل</span>
-<div id="walletNumber"></div>
+<div id="walletNumber">773713234</div>
 </div>
+<div class="wallet-actions">
 
-<button onclick="copyWallet()">
+<button onclick="openWallet()" class="open-wallet">
+فتح التطبيق
+</button>
+
+<button onclick="copyWallet()" class="copy-wallet">
 نسخ الرقم
 </button>
+
+</div>
+
+<div id="walletNumber"></div>
 
 </div>
 
@@ -997,17 +1008,23 @@ let walletNumber=""
 
 function selectWallet(name,number,url){
 
-walletUrl=url
-walletNumber=number
+walletUrl = url
+walletNumber = number
 
-document.getElementById("walletNumber").innerText=number
+document.getElementById("walletNumber").innerText = number
 
 generateQR(number)
 
 }
+
 function openWallet(){
 
-window.location=walletUrl
+if(!walletUrl){
+alert("اختر المحفظة أولاً")
+return
+}
+
+window.location.href = walletUrl
 
 }
 function generateQR(number){
@@ -1023,9 +1040,20 @@ document.getElementById("qrImage").src=
 }
 function copyWallet(){
 
+if(!walletNumber){
+alert("اختر المحفظة أولاً")
+return
+}
+
 navigator.clipboard.writeText(walletNumber)
 
-alert("تم النسخ")
+.then(()=>{
+alert("تم نسخ رقم المحفظة")
+})
+
+.catch(()=>{
+alert("فشل النسخ")
+})
 
 }
 function checkPayment(orderId){
@@ -1065,33 +1093,24 @@ function showStep(index){
     }
   }
 function showTab(tab){
-function showPaymentSuccess(){
 
-const card = document.querySelector(".payment-card")
+  // إزالة active من كل التبويبات
+  document.querySelectorAll(".tab")
+  .forEach(btn=>btn.classList.remove("active"))
 
-card.innerHTML = `
+  // إضافة active للتبويب الحالي
+  event.target.classList.add("active")
 
-<div class="success-box">
+  // إخفاء كل المحتويات
+  document.querySelectorAll(".tab-content")
+  .forEach(c=>c.classList.remove("active"))
 
-<h2>✅ تم تأكيد الدفع</h2>
-
-<p>
-تم استلام التحويل بنجاح
-وسيتم تنفيذ طلبك الآن
-</p>
-
-</div>
-
-`
+  // إظهار المحتوى المطلوب
+  document.getElementById(tab).classList.add("active")
 
 }
-document.querySelectorAll(".tab-content")
-.forEach(t=>t.classList.remove("active"))
 
-document.getElementById(tab)
-.classList.add("active")
 
-}
 nextBtns.forEach(btn=>{
   btn.addEventListener("click", ()=>{
 
