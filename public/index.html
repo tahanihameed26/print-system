@@ -1170,13 +1170,13 @@ if(lamination === "مسلفن"){
 
 
   /* ================= الإرسال ================= */
-
- let isSubmitting = false;
+let isSubmitting = false;
 
 form.addEventListener("submit", async function(e){
+
   e.preventDefault();
 
-  if(isSubmitting) return; // يمنع الإرسال المتكرر
+  if(isSubmitting) return;
 
   if(!validPhone(phoneInput.value)){
     phoneError.style.display = "block";
@@ -1189,12 +1189,11 @@ form.addEventListener("submit", async function(e){
   const btnText = submitBtn.querySelector(".btn-text");
   const btnLoader = submitBtn.querySelector(".btn-loader");
 
-  // 🔒 قفل الزر
   isSubmitting = true;
   submitBtn.disabled = true;
+
   btnText.style.display = "none";
   btnLoader.style.display = "inline-block";
-
 
   let formData = {
     name: form.name.value,
@@ -1210,83 +1209,122 @@ form.addEventListener("submit", async function(e){
   };
 
   /* ===== كروت ===== */
+
   if(productSelect.value === "كروت"){
-    const sizeValue = cardsSize.value === "custom"
+
+    const sizeValue =
+      cardsSize.value === "custom"
       ? document.getElementById("cardsCustomInput").value
       : cardsSize.value;
 
     formData.size = sizeValue;
-    formData.quantity = parseInt(document.getElementById("cardsQty")?.value) || 0;
-    formData.lamination = document.getElementById("cardsLamination")?.value || "";
-    formData.finish = document.getElementById("cardsFinish")?.value || "";
+
+    formData.quantity =
+      parseInt(document.getElementById("cardsQty")?.value) || 0;
+
+    formData.lamination =
+      document.getElementById("cardsLamination")?.value || "";
+
+    formData.finish =
+      document.getElementById("cardsFinish")?.value || "";
   }
 
   /* ===== كروت لاصق ===== */
+
   if(productSelect.value === "كروت لاصق"){
+
     const stickerSize = document.getElementById("stickerSize");
-    const sizeValue = stickerSize.value === "custom"
+
+    const sizeValue =
+      stickerSize.value === "custom"
       ? document.getElementById("stickerCustomInput").value
       : stickerSize.value;
 
     formData.size = sizeValue;
-    formData.quantity = parseInt(document.getElementById("stickerQty")?.value) || 0;
-    formData.lamination = document.getElementById("stickerLamination")?.value || "";
-    formData.finish = document.getElementById("stickerFinish")?.value || "";
+
+    formData.quantity =
+      parseInt(document.getElementById("stickerQty")?.value) || 0;
+
+    formData.lamination =
+      document.getElementById("stickerLamination")?.value || "";
+
+    formData.finish =
+      document.getElementById("stickerFinish")?.value || "";
   }
 
   /* ===== برشور ===== */
+
   if(productSelect.value === "برشور"){
+
     const brochureSize = document.getElementById("brochureSize");
-    const sizeValue = brochureSize.value === "custom"
+
+    const sizeValue =
+      brochureSize.value === "custom"
       ? document.getElementById("brochureCustomSize").value
       : brochureSize.value;
 
     formData.size = sizeValue;
-    formData.quantity = parseInt(document.getElementById("brochureQty")?.value) || 0;
-    formData.weight = document.getElementById("brochureWeight")?.value || "";
-    formData.faces = document.getElementById("brochureFaces")?.value || "";
-    formData.lamination = document.getElementById("brochureLamination")?.value || "";
-    formData.finish = document.getElementById("brochureFinish")?.value || "";
+
+    formData.quantity =
+      parseInt(document.getElementById("brochureQty")?.value) || 0;
+
+    formData.weight =
+      document.getElementById("brochureWeight")?.value || "";
+
+    formData.faces =
+      document.getElementById("brochureFaces")?.value || "";
+
+    formData.lamination =
+      document.getElementById("brochureLamination")?.value || "";
+
+    formData.finish =
+      document.getElementById("brochureFinish")?.value || "";
   }
 
-  try {
-    const response = await fetch("/api/orders", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(formData)
-    });
-const result = await response.json();
+  try{
 
-document.getElementById("paymentOrderId").textContent = result.orderId;
-document.getElementById("paymentAmount").textContent = formData.price;
+    const response = await fetch(
+      "/api/orders",
+      {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(formData)
+      }
+    );
 
-document.getElementById("paymentModal").classList.add("show");
-  checkPayment(orderId)
-// إعادة تعيين النموذج بعد 3 ثواني
-setTimeout(() => {
-  successBox.classList.remove("show");
-  form.reset();
-  priceBox.style.display = "none";
-  currentStep = 0;
-  showStep(0);
-}, 3000);
+    const result = await response.json();
 
-    if(!response.ok){
-      throw new Error("فشل الإرسال");
+    if(!result.success){
+      throw new Error("order error");
     }
 
-  } catch(err){
+    const orderId = result.orderId;
+
+    document.getElementById("paymentOrderId").textContent = orderId;
+
+    document.getElementById("paymentAmount").textContent = formData.price;
+
+    document.getElementById("paymentModal").classList.add("show");
+
+    checkPayment(orderId);
+
+  }catch(err){
+
+    console.error(err);
     alert("حدث خطأ أثناء الإرسال");
+
   }
 
-  // 🔓 فتح الزر بعد الانتهاء
   isSubmitting = false;
+
   submitBtn.disabled = false;
+
   btnText.style.display = "inline";
+
   btnLoader.style.display = "none";
 
 });
- const btn = document.getElementById("confirmPaymentBtn");
+const btn = document.getElementById("confirmPaymentBtn");
 
   if(!btn) return;
 
