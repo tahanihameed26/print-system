@@ -1294,9 +1294,9 @@ form.addEventListener("submit", async function(e){
 
     const result = await response.json();
 
-    if(!result.success){
-      throw new Error("order error");
-    }
+    // if(!result.success){
+    //   throw new Error("order error");
+    // }
 
     const orderId = result.orderId;
 
