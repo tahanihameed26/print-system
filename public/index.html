@@ -1267,7 +1267,7 @@ document.getElementById("paymentOrderId").textContent = result.orderId;
 document.getElementById("paymentAmount").textContent = formData.price;
 
 document.getElementById("paymentModal").classList.add("show");
-
+  checkPayment(orderId)
 // إعادة تعيين النموذج بعد 3 ثواني
 setTimeout(() => {
   successBox.classList.remove("show");
@@ -1286,7 +1286,7 @@ setTimeout(() => {
   submitBtn.disabled = false;
   btnText.style.display = "inline";
   btnLoader.style.display = "none";
-  checkPayment(orderId)
+
 });
  const btn = document.getElementById("confirmPaymentBtn");
 
@@ -1295,7 +1295,7 @@ setTimeout(() => {
   btn.addEventListener("click", async function(){
 
     const transactionId = document.getElementById("transactionId").value;
-    const orderId = document.getElementById("paymentOrderId").textContent;
+  const orderId = result.orderId;
     const amount = document.getElementById("paymentAmount").textContent;
 
     try {
