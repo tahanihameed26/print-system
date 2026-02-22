@@ -869,16 +869,15 @@ onclick="showTab('banks')">
 <div class="wallet-grid">
 
 <div class="wallet-card"
-onclick="selectWallet('جيب','773713234','jeeb://')">
+onclick="openWallet('com.jeeb.wallet')">
 
 <img src="icons/jaib.png">
 <span>جيب</span>
 
 </div>
 
-
 <div class="wallet-card"
-onclick="selectWallet('فلوسك','777123456','flousak://')">
+onclick="openWallet('com.floosak.wallet')">
 
 <img src="icons/floosk.png">
 <span>فلوسك</span>
@@ -922,17 +921,7 @@ onclick="selectWallet('التضامن','987654321','')">
 <span>رقم التحويل</span>
 <div id="walletNumber">773713234</div>
 </div>
-<div class="wallet-actions">
 
-<button onclick="openWallet()" class="open-wallet">
-فتح التطبيق
-</button>
-
-<button onclick="copyWallet()" class="copy-wallet">
-نسخ الرقم
-</button>
-
-</div>
 
 <div id="walletNumber"></div>
 
@@ -1017,16 +1006,20 @@ generateQR(number)
 
 }
 
-function openWallet(){
+function openWallet(packageName){
 
-if(!walletUrl){
-alert("اختر المحفظة أولاً")
-return
+window.location.href =
+`intent://#Intent;package=${packageName};end`
+
+setTimeout(()=>{
+
+window.location.href =
+`https://play.google.com/store/apps/details?id=${packageName}`
+
+},1500)
+
 }
 
-window.location.href = walletUrl
-
-}
 function generateQR(number){
 
 const amount =
