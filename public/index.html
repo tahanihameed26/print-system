@@ -735,6 +735,29 @@ button:hover{
 
   </div>
 </div>
+<div id="paymentModal" class="payment-modal">
+
+  <div class="payment-card">
+
+    <div class="order-summary-box">
+
+      <div class="summary-row">
+        <span>رقم الطلب</span>
+        <strong id="paymentOrderId"></strong>
+      </div>
+
+      <div class="summary-row">
+        <span>المبلغ المطلوب</span>
+        <strong>
+          <span id="paymentAmount"></span> ريال
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 <div class="payment-tabs">
 
 <button class="tab active" onclick="showTab('wallets')">
@@ -1306,7 +1329,7 @@ form.addEventListener("submit", async function(e){
 
     document.getElementById("paymentModal").classList.add("show");
 
-    //checkPayment(orderId);
+    checkPayment(orderId);
 
   }catch(err){
 
