@@ -1294,9 +1294,9 @@ form.addEventListener("submit", async function(e){
 
     const result = await response.json();
 
-    // if(!result.success){
-    //   throw new Error("order error");
-    // }
+    if(!result.success){
+      throw new Error("order error");
+    }
 
     const orderId = result.orderId;
 
@@ -1306,7 +1306,7 @@ form.addEventListener("submit", async function(e){
 
     document.getElementById("paymentModal").classList.add("show");
 
-    checkPayment(orderId);
+    //checkPayment(orderId);
 
   }catch(err){
 
