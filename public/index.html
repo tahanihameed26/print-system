@@ -1255,14 +1255,8 @@ form.addEventListener("submit", async function(e){
       headers:{ "Content-Type":"application/json" },
       body: JSON.stringify(formData)
     });
-
-    if(!response.ok){
-      throw new Error("فشل الإرسال");
-    }
 const result = await response.json();
-// const successBox = document.getElementById("successMessage");
 
-// successBox.classList.add("show");
 document.getElementById("paymentOrderId").textContent = result.orderId;
 document.getElementById("paymentAmount").textContent = formData.price;
 
@@ -1276,6 +1270,10 @@ setTimeout(() => {
   currentStep = 0;
   showStep(0);
 }, 3000);
+
+    if(!response.ok){
+      throw new Error("فشل الإرسال");
+    }
 
   } catch(err){
     alert("حدث خطأ أثناء الإرسال");
