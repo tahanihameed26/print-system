@@ -1288,44 +1288,39 @@ setTimeout(() => {
   btnLoader.style.display = "none";
   checkPayment(orderId)
 });
-document.getElementById("confirmPaymentBtn")
-.addEventListener("click", async function(){
+ const btn = document.getElementById("confirmPaymentBtn");
 
-  const btn = this;
-  btn.disabled = true;
-  btn.innerText = "جاري تسجيل الدفع...";
+  if(!btn) return;
 
-  const transactionId = document.getElementById("transactionId").value;
-  const orderId = document.getElementById("paymentOrderId").textContent;
-  const amount = document.getElementById("paymentAmount").textContent;
+  btn.addEventListener("click", async function(){
 
-  try {
+    const transactionId = document.getElementById("transactionId").value;
+    const orderId = document.getElementById("paymentOrderId").textContent;
+    const amount = document.getElementById("paymentAmount").textContent;
 
-    const response = await fetch("/api/payments", {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({
-        orderId,
-        transactionId,
-        amount
-      })
-    });
+    try {
 
-    if(!response.ok){
-      throw new Error();
+      const response = await fetch("/api/payments", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+          orderId,
+          transactionId,
+          amount
+        })
+      });
+
+      if(!response.ok){
+        throw new Error();
+      }
+
+      showPaymentPendingState();
+
+    } catch(err){
+      alert("حدث خطأ أثناء إرسال بيانات الدفع");
     }
 
-    showWaitingVerification();
-
-  } catch(err){
-
-    btn.disabled = false;
-    btn.innerText = "تأكيد الدفع";
-    alert("حدث خطأ أثناء إرسال بيانات الدفع");
-
-  }
-
-});
+  });
 function showWaitingVerification(){
 
   const card = document.querySelector(".payment-card");
