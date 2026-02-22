@@ -737,34 +737,36 @@ button:hover{
 </div>
 <div id="paymentModal" class="payment-modal">
 
-  <div class="payment-card">
+<div class="payment-card">
 
-    <div class="order-summary-box">
+<h2>إتمام الدفع</h2>
 
-      <div class="summary-row">
-        <span>رقم الطلب</span>
-        <strong id="paymentOrderId"></strong>
-      </div>
+<div class="order-summary">
 
-      <div class="summary-row">
-        <span>المبلغ المطلوب</span>
-        <strong>
-          <span id="paymentAmount"></span> ريال
-        </strong>
-      </div>
+<div class="row">
+<span>رقم الطلب</span>
+<strong id="paymentOrderId"></strong>
+</div>
 
-    </div>
-
-  </div>
+<div class="row">
+<span>المبلغ المطلوب</span>
+<strong>
+<span id="paymentAmount"></span> ريال
+</strong>
+</div>
 
 </div>
+
+
 <div class="payment-tabs">
 
-<button class="tab active" onclick="showTab('wallets')">
+<button class="tab active"
+onclick="showTab('wallets')">
 المحافظ
 </button>
 
-<button class="tab" onclick="showTab('banks')">
+<button class="tab"
+onclick="showTab('banks')">
 البنوك
 </button>
 
@@ -779,16 +781,15 @@ button:hover{
 onclick="selectWallet('جيب','773713234','jeeb://')">
 
 <img src="icons/jaib.png">
-
 <span>جيب</span>
 
 </div>
+
 
 <div class="wallet-card"
 onclick="selectWallet('فلوسك','777123456','flousak://')">
 
 <img src="icons/floosk.png">
-
 <span>فلوسك</span>
 
 </div>
@@ -803,20 +804,44 @@ onclick="selectWallet('فلوسك','777123456','flousak://')">
 <div class="wallet-grid">
 
 <div class="wallet-card"
-onclick="selectWallet('الكريمي','123456789')">
+onclick="selectWallet('الكريمي','123456789','')">
 
 <img src="icons/Krumri.png">
-
 <span>الكريمي</span>
 
 </div>
 
+
 <div class="wallet-card"
-onclick="selectWallet('التضامن','987654321')">
+onclick="selectWallet('التضامن','987654321','')">
 
 <img src="icons/cash.jpg">
-
 <span>التضامن</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="wallet-info">
+
+<div>
+<span>رقم التحويل</span>
+<div id="walletNumber"></div>
+</div>
+
+<button onclick="copyWallet()">
+نسخ الرقم
+</button>
+
+</div>
+
+
+<div class="waiting-box" id="waitingBox" style="display:none">
+
+⏳ جاري انتظار إشعار الدفع...
 
 </div>
 
@@ -951,7 +976,26 @@ function showStep(index){
     }
   }
 function showTab(tab){
+function showPaymentSuccess(){
 
+const card = document.querySelector(".payment-card")
+
+card.innerHTML = `
+
+<div class="success-box">
+
+<h2>✅ تم تأكيد الدفع</h2>
+
+<p>
+تم استلام التحويل بنجاح
+وسيتم تنفيذ طلبك الآن
+</p>
+
+</div>
+
+`
+
+}
 document.querySelectorAll(".tab-content")
 .forEach(t=>t.classList.remove("active"))
 
