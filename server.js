@@ -100,41 +100,60 @@ app.post("/api/payments", async (req, res) => {
   }
 
 });
-app.post("/api/notification-payment", async (req, res) => {
+app.post("/api/notification", async (req,res)=>{
 
-  try {
+const { amount , wallet } = req.body
 
-    const {
-      wallet,
-      title,
-      text,
-      amount,
-      sender,
-      time
-    } = req.body;
+try{
 
-    await pool.query(
-      `INSERT INTO wallet_notifications
-      (wallet_app, title, message, amount, sender, created_at)
-      VALUES ($1,$2,$3,$4,$5,$6)`,
-      [
-        wallet,
-        title,
-        text,
-        amount,
-        sender,
-        time
-      ]
-    );
+const order = await pool.query(
+`SELECT * FROM orders 
+WHERE price=$1 
+AND status='pending'
+LIMIT 1`,
+[amount]
+)
 
-    res.json({ success: true });
+if(order.rows.length){
 
-  } catch(err){
-    console.error(err);
-    res.status(500).json({ error:"notification error" });
-  }
+await pool.query(`
+UPDATE orders
+SET status='paid'
+WHERE id=$1
+`,[order.rows[0].id])
 
-});
+await pool.query(`
+INSERT INTO payments (order_id,amount,wallet)
+VALUES ($1,$2,$3)
+`,[
+order.rows[0].id,
+amount,
+wallet
+])
+
+}
+
+res.json({success:true})
+
+}catch(err){
+
+console.log(err)
+}
+})
+app.get("/api/check-payment/:id",async(req,res)=>{
+
+const id=req.params.id
+
+const result = await pool.query(
+`SELECT status FROM orders WHERE id=$1`,
+[id]
+)
+
+res.json({
+paid: result.rows[0].status==="paid"
+})
+
+})
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

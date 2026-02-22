@@ -735,17 +735,71 @@ button:hover{
 
   </div>
 </div>
-<div class="payment-fields">
+<div class="payment-tabs">
 
-  <input type="text" id="transactionId" 
-  placeholder="رقم العملية (اختياري)">
+<button class="tab active" onclick="showTab('wallets')">
+المحافظ
+</button>
 
-  <div class="auto-detect-note">
-    💡 بمجرد تحويل المبلغ سيتم اكتشاف العملية تلقائياً
-  </div>
+<button class="tab" onclick="showTab('banks')">
+البنوك
+</button>
 
 </div>
 
+
+<div id="wallets" class="tab-content active">
+
+<div class="wallet-grid">
+
+<div class="wallet-card"
+onclick="selectWallet('جيب','773713234','jeeb://')">
+
+<img src="images/jeeb.png">
+
+<span>جيب</span>
+
+</div>
+
+<div class="wallet-card"
+onclick="selectWallet('فلوسك','777123456','flousak://')">
+
+<img src="images/flousak.png">
+
+<span>فلوسك</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="banks" class="tab-content">
+
+<div class="wallet-grid">
+
+<div class="wallet-card"
+onclick="selectWallet('الكريمي','123456789')">
+
+<img src="images/kuraimi.png">
+
+<span>الكريمي</span>
+
+</div>
+
+<div class="wallet-card"
+onclick="selectWallet('التضامن','987654321')">
+
+<img src="images/tadhamon.png">
+
+<span>التضامن</span>
+
+</div>
+
+</div>
+
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -801,12 +855,66 @@ if (brochureSize) {
       this.value === "custom" ? "block" : "none";
   });
 }
+let walletUrl=""
+let walletNumber=""
 
+function selectWallet(name,number,url){
+
+walletUrl=url
+walletNumber=number
+
+document.getElementById("walletNumber").innerText=number
+
+generateQR(number)
+
+}
+function openWallet(){
+
+window.location=walletUrl
+
+}
+function generateQR(number){
+
+const amount =
+document.getElementById("paymentAmount").innerText
+
+const data = `PAY:${number}|AMOUNT:${amount}`
+
+document.getElementById("qrImage").src=
+`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data)}`
+
+}
+function copyWallet(){
+
+navigator.clipboard.writeText(walletNumber)
+
+alert("تم النسخ")
+
+}
+function checkPayment(orderId){
+
+setInterval(async ()=>{
+
+const res = await fetch(
+`https://print-system.onrender.com/api/check-payment/${orderId}`
+)
+
+const data = await res.json()
+
+if(data.paid){
+
+showPaymentSuccess()
+
+}
+
+},5000)
+
+}
   let currentStep = 0;
 
   /* ================= التنقل بين الخطوات ================= */
 
-  function showStep(index){
+function showStep(index){
     steps.forEach((step,i)=>{
       step.classList.toggle("active", i === index);
     });
@@ -819,7 +927,15 @@ if (brochureSize) {
       generateSummary();
     }
   }
+function showTab(tab){
 
+document.querySelectorAll(".tab-content")
+.forEach(t=>t.classList.remove("active"))
+
+document.getElementById(tab)
+.classList.add("active")
+
+}
 nextBtns.forEach(btn=>{
   btn.addEventListener("click", ()=>{
 
@@ -1170,6 +1286,7 @@ setTimeout(() => {
   submitBtn.disabled = false;
   btnText.style.display = "inline";
   btnLoader.style.display = "none";
+  checkPayment(orderId)
 });
 document.getElementById("confirmPaymentBtn")
 .addEventListener("click", async function(){
