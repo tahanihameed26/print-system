@@ -845,12 +845,8 @@ color:white;
 <span id="paymentAmount"></span> ريال
 </strong>
 </div>
-
 </div>
-
-
 <div class="payment-tabs">
-
 <button class="tab active"
 onclick="showTab('wallets')">
 المحافظ
@@ -860,63 +856,114 @@ onclick="showTab('wallets')">
 onclick="showTab('banks')">
 البنوك
 </button>
-
 </div>
-
-
 <div id="wallets" class="tab-content active">
 
 <div class="wallet-grid">
 <div class="wallet-card"
-onclick="openWallet('com.ahd.jaib','773713234')">
+onclick="openWallet('com.ahd.jaib')">
 
 <img src="icons/jaib.png">
 
 <span>جيب</span>
 
 </div>
-
 <div class="wallet-card"
-onclick="openWallet('com.floosak.wallet')">
+onclick="openWallet('com.ysys.floosak')">
 
 <img src="icons/floosk.png">
 <span>فلوسك</span>
 
 </div>
+<div class="wallet-card"
+onclick="openWallet('com.ama.wecashmobileapp')">
+
+<img src="icons/jwali.jpg">
+<span>جوالي</span>
+
+</div>
+<div class="wallet-card"
+onclick="openWallet('com.tamkeen.sms')">
+
+<img src="icons/cash.png">
+<span>كاش</span>
+
+</div>
+<div class="wallet-card"
+onclick="openWallet('com.one.onecustomer')">
+
+<img src="icons/cash.jpg">
+<span>ون كاش</span>
+
+</div>
+<div class="wallet-card"
+onclick="openWallet('com.cac.mobilemoney.app')">
+
+<img src="icons/mobilemoney.png">
+<span>موبايل موني</span>
+
+</div>
+<div class="wallet-card"
+onclick="openWallet('com.yottagate.sabacash')">
+
+<img src="icons/sabacash.png">
+<span>سبأ كاش</span>
+
+</div>
+<div class="wallet-card"
+onclick="openWallet('com.easy_aio.client')">
+
+<img src="icons/easy.jpg">
+<span>ايزي</span>
 
 </div>
 
+<div class="wallet-card"
+onclick="openWallet('com.almutakamila.mpay')">
+
+<img src="icons/matkmal.png">
+<span>المتكامله</span>
+
 </div>
-
-
+<div class="wallet-card"
+onclick="openWallet('shamil.bank.yemen.bahrain.wallet.money')">
+<img src="icons/shamal.jpg">
+<span>شامل موني</span>
+</div>
+</div>
+</div>
 <div id="banks" class="tab-content">
 
 <div class="wallet-grid">
 
 <div class="wallet-card"
-onclick="selectWallet('الكريمي','123456789','')">
-
+onclick="openWallet('com.KuraimiBank')">
 <img src="icons/Krumri.png">
 <span>الكريمي</span>
 
 </div>
 
-
 <div class="wallet-card"
-onclick="selectWallet('التضامن','987654321','')">
+onclick="openWallet('com.howbani.pg.net.sabamobaily')">
 
-<img src="icons/cash.jpg">
-<span>التضامن</span>
 
-</div>
-
-</div>
+<img src="icons/BankSaba.jpg">
+<span>بنك سبأ</span>
 
 </div>
-
-
+<div class="wallet-card"
+onclick="openWallet('shamil.bank.yemen.bahrain.wallet.money')">
+<img src="icons/ShamlBank.png">
+<span>مصرف اليمن البحرين الشامل </span>
+</div>
+<div class="wallet-card"
+onclick="openWallet('com.cac.mobilemoney.app')">
+<img src="icons/cacBank.png">
+<span>كاك بنك </span>
+</div>
+</div>
+</div>
 <div class="wallet-info">
-
 <div>
 <span>رقم التحويل</span>
 <div id="walletNumber">773713234</div>
@@ -939,6 +986,8 @@ onclick="selectWallet('التضامن','987654321','')">
 </div>
 
 <script>
+  let customerPhone = "";
+
 document.addEventListener("DOMContentLoaded", function() {
 
   /* ================= العناصر الأساسية ================= */
@@ -1453,7 +1502,7 @@ form.addEventListener("submit", async function(e){
     }
 
     const orderId = result.orderId;
-
+customerPhone = phoneInput.value;
     document.getElementById("paymentOrderId").textContent = orderId;
 
     document.getElementById("paymentAmount").textContent = formData.price;
@@ -1543,18 +1592,17 @@ function showWaitingVerification(){
 });
 
 
-function openWallet(packageName, number){
+function openWallet(packageName){
 
-  navigator.clipboard.writeText(number)
+  if(!customerPhone){
+    alert("لم يتم العثور على رقم العميل");
+    return;
+  }
 
-  const intent =
-  "intent://#Intent;" +
-  "package=" + packageName + ";" +
-  "scheme=android-app;" +
-  "S.browser_fallback_url=https://play.google.com/store/apps/details?id=" + packageName + ";" +
-  "end"
+  navigator.clipboard.writeText(customerPhone);
 
-  window.location.href = intent
+  window.location =
+  "intent://#Intent;scheme=android-app;package="+packageName+";end";
 
 }
 </script>
