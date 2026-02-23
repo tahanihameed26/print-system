@@ -1008,12 +1008,17 @@ generateQR(number)
 
 function openWallet(packageName, number){
 
-  navigator.clipboard.writeText(number)
+navigator.clipboard.writeText(number)
 
-  window.location =
-  "intent://#Intent;scheme=android-app;package="+packageName+";end"
+const url =
+"intent://#Intent;package="+packageName+
+";scheme=android-app;S.browser_fallback_url=https://play.google.com/store/apps/details?id="+packageName+";end"
+
+window.location = url
 
 }
+
+
 function generateQR(number){
 
 const amount =
