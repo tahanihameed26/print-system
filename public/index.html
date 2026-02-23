@@ -867,11 +867,11 @@ onclick="showTab('banks')">
 <div id="wallets" class="tab-content active">
 
 <div class="wallet-grid">
-
 <div class="wallet-card"
-onclick="openWallet('com.jeeb.wallet')">
+onclick="openWallet('com.ahd.jaib','773713234')">
 
 <img src="icons/jaib.png">
+
 <span>جيب</span>
 
 </div>
@@ -1006,20 +1006,14 @@ generateQR(number)
 
 }
 
-function openWallet(packageName){
+function openWallet(packageName, number){
 
-window.location.href =
-`intent://#Intent;package=${packageName};end`
+  navigator.clipboard.writeText(number)
 
-setTimeout(()=>{
-
-window.location.href =
-`https://play.google.com/store/apps/details?id=${packageName}`
-
-},1500)
+  window.location =
+  "intent://#Intent;scheme=android-app;package="+packageName+";end"
 
 }
-
 function generateQR(number){
 
 const amount =
