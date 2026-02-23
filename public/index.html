@@ -1120,23 +1120,6 @@ function showStep(index){
       generateSummary();
     }
   }
-function showTab(tab){
-
-  // إزالة active من كل التبويبات
-  document.querySelectorAll(".tab")
-  .forEach(btn=>btn.classList.remove("active"))
-
-  // إضافة active للتبويب الحالي
-  event.target.classList.add("active")
-
-  // إخفاء كل المحتويات
-  document.querySelectorAll(".tab-content")
-  .forEach(c=>c.classList.remove("active"))
-
-  // إظهار المحتوى المطلوب
-  document.getElementById(tab).classList.add("active")
-
-}
 
 
 nextBtns.forEach(btn=>{
@@ -1591,6 +1574,23 @@ function showWaitingVerification(){
 }
 });
 
+function showTab(tab){
+
+  // إزالة active من كل التبويبات
+  document.querySelectorAll(".tab")
+  .forEach(btn=>btn.classList.remove("active"))
+
+  // إضافة active للتبويب الحالي
+  event.target.classList.add("active")
+
+  // إخفاء كل المحتويات
+  document.querySelectorAll(".tab-content")
+  .forEach(c=>c.classList.remove("active"))
+
+  // إظهار المحتوى المطلوب
+  document.getElementById(tab).classList.add("active")
+
+}
 
 function openWallet(packageName){
 
