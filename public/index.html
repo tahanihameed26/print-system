@@ -1084,26 +1084,9 @@ alert("فشل النسخ")
 })
 
 }
-function checkPayment(orderId){
 
-setInterval(async ()=>{
 
-const res = await fetch(
-`https://print-system.onrender.com/api/check-payment/${orderId}`
-)
-
-const data = await res.json()
-
-if(data.paid){
-
-showPaymentSuccess()
-
-}
-
-},5000)
-
-}
-  let currentStep = 0;
+let currentStep = 0;
 
   /* ================= التنقل بين الخطوات ================= */
 
@@ -1591,7 +1574,32 @@ function showTab(tab){
   document.getElementById(tab).classList.add("active")
 
 }
+function showPaymentSuccess(){
 
+const card = document.querySelector(".payment-card")
+
+card.innerHTML = `
+
+<div class="success-box">
+
+<div class="success-icon">✅</div>
+
+<h2>تم استلام الدفع</h2>
+
+<p>
+تم تأكيد عملية الدفع بنجاح
+وسيتم البدء في تجهيز طلبك للطباعة
+</p>
+
+<button onclick="location.reload()">
+إغلاق
+</button>
+
+</div>
+
+`
+
+}
 function openWallet(packageName){
 
   if(!customerPhone){
@@ -1605,6 +1613,26 @@ function openWallet(packageName){
   "intent://#Intent;scheme=android-app;package="+packageName+";end";
 
 }
+function checkPayment(orderId){
+
+setInterval(async ()=>{
+
+const res = await fetch(
+`/api/check-payment/${orderId}`
+)
+
+const data = await res.json()
+
+if(data.paid){
+
+showPaymentSuccess()
+
+}
+
+},5000)
+
+}
+
 </script>
 
 </body>
